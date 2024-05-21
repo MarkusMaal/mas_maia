@@ -1,0 +1,18 @@
+<form action = "/upload?path={{PATH}}" method="POST" class="col s12"
+      enctype = "multipart/form-data">
+	<div class = "row">
+	   <label>Faili saatmine arvutisse</label>
+	   <div class = " file-field input-field">
+		  <div class = "btn deep-purple lighten-2 waves-effect waves-light">
+			 <span>Lehitsemine</span>
+			 <input name="file"  type = "file" />
+		  </div>
+		  
+		  <div class = "file-path-wrapper">
+			 <input class = "file-path validate" type = "text"
+				placeholder = "Valige üleslaaditav fail" />
+		  </div>
+	   </div>
+	</div>
+    <input class="btn deep-purple lighten-2 waves-light" type="submit" value="Laadi üles"/>
+</form>

@@ -1,0 +1,165 @@
+body {
+	font-family: "Roboto", "Product Sans", "Calibri", sans-serif, serif;
+	font-size: 13pt;
+	/*padding-left: 10%;
+	padding-right: 10%;
+	padding-bottom: 60px;
+	padding-top: 60px;*/
+	word-break: break-all;
+}
+
+img {
+	/*height: 250px;*/
+}
+
+ul.dropdown-content.select-dropdown li span {
+    color: #77b;; /* no need for !important :) */
+}
+/* label focus color */
+ .input-field input:focus + label {
+   color: #77b !important;
+ }
+ /* label underline focus color */
+ .row .input-field input:focus {
+   border-bottom: 1px solid #77b !important;
+   box-shadow: 0 1px 0 0 #77b !important
+ }
+
+.navbar {
+	background: transparent;
+	padding: 0;
+}
+
+div.mainpage {
+	padding-left: 10%;
+	left: 0;
+	/*top: 22rem;*/
+	padding-right: 10%;
+	z-index: -1;
+}
+
+.inline-icon {
+   vertical-align: bottom;
+   font-size: 23px !important;
+}
+
+.breadcrumb:before {
+    color: #000;
+}
+
+.breadcrumb, .breadcrumb:last-child {
+   color: #000;
+}
+
+.icon-blue {
+   color: #aaf;
+}
+
+.purple {
+	background-color: #0f0;
+}
+
+hr {
+	background: gray;
+	border: none;
+	height: 1px;
+	margin-top: 20px;
+	margin-bottom: 20px;
+	width: 25%;
+}
+
+/*input[type="text"], select, input[type="password"], textarea {
+	background: linear-gradient(#beb, #cfc);
+	border: none;
+	padding: 10px;
+}*/
+/*input[type="text"]:hover, select:hover, input[type="password"]:hover, textarea:hover {
+	background: linear-gradient(#cfc, #efe);
+}*/
+
+h1 {
+	font-weight: normal;
+	margin-bottom: 0;
+}
+
+img[alt="www.000webhost.com"]
+{
+    display:none;
+}
+
+#mobile-menu {
+	margin-top: 26%;
+	height: auto;
+}
+
+.right {
+	background: transparent;
+}
+
+.sidenav-overlay {
+	background: #0000;
+}
+
+nav > .blue {
+	background: linear-gradient(#8082C5 0%, #8082C5 30%, #A1A4E7 30%, #A1A4E7 100%);
+}
+
+	nav .brand-logo {
+		margin-top: 35px;
+		font-size: 1.6rem;
+	}
+
+	a.sidenav-trigger {
+		margin-left: 20px;
+		margin-top: 15px;
+	}
+
+	.mainpage {
+		margin-top: 60px;
+	}
+
+	nav i, nav [class^="mdi-"], nav [class*="mdi-"], nav i.material-icons {
+		height: 100px;
+		line-height: 100px;
+	}
+
+	nav .button-collapse i {
+		height: 100px;
+		line-height: 100px;
+	}
+
+
+	nav {
+		height: 100px;
+		line-height: 100px;
+	}
+
+@media(min-width: 994px) {
+	.fixed-action-btn {
+		display: none;
+	}
+	
+	#nav-mobile {
+		margin-top: 30px;
+	}
+	
+	#nav-mobile > li {
+		height: 70px;
+	}
+	
+	#nav-mobile > li > a {
+		height: 70px;
+	}
+}
+@media (max-width: 994px) {
+	#logo {
+		display: none;
+	}
+}
+
+@media (max-width: 599px) {
+
+	h1, h2 {
+		font-size: 140%;
+	}
+}

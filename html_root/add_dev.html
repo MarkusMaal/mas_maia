@@ -1,0 +1,21 @@
+<h1>Seadme lisamine</h1>
+    <br/>
+<form method="POST" action="/add_dev">
+IP aadress: <input name="ip" type="text" value="0.0.0.0"/><br/>
+    <br/>
+	<div class="input-field col s10">
+
+        <select name="type">
+            <option value="mas">Arvuti (mas)</option>
+            <option value="masl">Sülearvuti (masl)</option>
+            <option value="masv">Virtuaalarvuti (masv)</option>
+            <option value="mta">Tahvelarvuti (mta)</option>
+            <option value="mtel">Telefon (mtel)</option>
+            <option value="mat">Muu seade (mat)</option>
+        </select>
+		<label>Tüüp:</label>
+	</div>
+    <br/>
+    <br/>
+    <input class="btn  waves-light white-text deep-purple lighten-2" type="submit" value="Lisa seade"/>
+</form>

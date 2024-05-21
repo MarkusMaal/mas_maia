@@ -1,0 +1,41 @@
+<h2>Taustapildi üleslaadmine</h2>
+<form action = "/mas_db/upload_wallpaper" method="POST"
+      enctype = "multipart/form-data">
+    <div class="file-field input-field">
+		<div class="btn deep-purple lighten-2 waves-effect waves-light">
+			<span>Lehitsemine</span>
+			<input name="file" type="file">
+		</div>
+		<div class="file-path-wrapper">
+		<input class="file-path validate" type="text" placeholder="Valige üleslaaditav fail">
+		</div>
+    </div>
+		<button class="waves-effect waves-light btn deep-purple lighten-2" type="submit">Laadi üles</button>
+</form><hr>
+<h2>Üleslaaditud taustapildi lisamine olemasolevale üksusele</h2>
+<form action = "/mas_db/chain_wallpaper" method="POST">
+    <label for="location">Olemasolev taustapilt</label><select class="deep-purple lighten-2" id="location" name="location">
+    {% for wallpaper in fswallpapers %}
+        <option value="{{wallpaper}}">{{wallpaper}}</option>
+    {% endfor %}
+    </select><br/><br/>
+    Seo versiooniga: <select name="ver_id">
+    {% for id, versioon, lversioon, aasta, nimi, kirjeldus, mini in elements %}
+    <option value="{{id}}">{{versioon}} - {{lversioon}} / {{nimi}}</option>
+    {% endfor %}
+    </select><br/><br/>
+    <button class="waves-effect waves-light btn deep-purple lighten-2" type="submit">Lisa andmebaasi</button>
+</form><hr>
+<h2>Taustapildi eemaldamine versioonist</h2>
+<form action="/mas_db/remove_wallpaper" method="POST">
+    <select name="id">
+    {% for id, wallpaper, sid in wallpapers %}
+        {% for id, versioon, lversioon, aasta, nimi, kirjeldus, mini in elements %}
+            {% if id == sid %}
+                <option value="{{id}}">{{wallpaper}} &cup; {{versioon}} - {{lversioon}} / {{nimi}}</option>
+            {% endif %}
+        {% endfor %}
+    {% endfor %}
+    </select><br/><br/>
+    <button class="waves-effect waves-light btn deep-purple lighten-2" type="submit">Eemalda</button>
+</form>

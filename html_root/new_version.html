@@ -1,0 +1,20 @@
+<h1>Lisa kirje</h1>
+<form method="post" action="/mas_db/add">
+	<div class="input-field">
+    <label for="title">Versiooni nimi</label>
+    <input id="title" name="title" style="width: 97%;" type="text"/>
+	</div><div class="input-field">
+    <label for="fver">Versioonid</label>
+    <input id="fver" name="fver" style="width: 5%;" type="text" value="99.99"/>&nbsp;&nbsp;-&nbsp;&nbsp;<input name="lver" style="width: 5%;" type="text" value="99.99"/>
+	</div><div class="input-field">
+    <label for="description">Kirjeldus</label>
+    <textarea class="materialize-textarea" id="description" name="description" rows="5" cols="100"></textarea>
+	</div><div class="input-field">
+    <label for="year">Aasta</label>
+    <input id="year" name="year" type="text" style="width: 5%;"/>
+	</div>
+	<label>
+	<input class="filled-in" name="boolmini" type="checkbox"/><span>Miniversioon</span><br/>
+	</label>
+	<br/><button style="color: #fff;" class="waves-effect waves-light btn deep-purple lighten-2" type="submit">Lisa üksus</button>
+</form>

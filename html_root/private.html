@@ -1,0 +1,97 @@
+<h2>See seade</h2>
+Tüüp:
+{% if SESSION["device"] == "mas" %}
+Markuse arvuti
+{% elif SESSION["device"] == "mtel" %}
+Markuse telefon
+{% elif SESSION["device"] == "masl" %}
+Markuse sülearvuti
+{% elif SESSION["device"] == "mta" %}
+Markuse tahvelarvuti
+{% elif SESSION["device"] == "masv" %}
+Markuse virtuaalarvuti
+{% elif SESSION["device"] == "mat" %}
+Markuse asjad muudele seadmetele
+{% endif %}
+<br>
+IP aadress: <span style="display: none;" id="mac">{{SESSION["code"]}}</span><a id="me" href="#/" onclick="document.getElementById('mac').style['display'] = 'inline'; document.getElementById('me').style['display'] = 'none';">Kuva</a>
+<h2>Tegevused</h2>
+<a class="waves-effect waves-light btn deep-purple lighten-2" href="/lock">Lukusta ekraan</a>
+<br><br/><a class="waves-effect waves-light btn deep-purple lighten-2" href="/screen">Ekraanipilt</a>
+{% if not "mas" in SESSION["device"] %}
+<br><br/><a class="waves-effect waves-light btn deep-purple lighten-2" href="/logout">Katkesta ühendus</a>
+{% endif %}
+
+<form method="POST" action="/chg_color">
+	<p style="margin-bottom: 0;">Värviskeem</p>
+	<label for="bg">Taust</label>
+	<input type="color" name="bg" id="bg" value="{{ computer.HexBgStr }}">&nbsp;&nbsp;
+	<label for="fg">Esiplaan</label>
+	<input type="color" name="fg" id="fg" value="{{ computer.HexFgStr }}">
+	<p style="margin-bottom: 0;">Konfiguratsioon</p>
+	<p>
+	  <label>
+		<input type="checkbox" name="show_logo" {% if computer.SHOW_LOGO %} checked {% endif %}/>
+		<span >Kuva Markuse asjade logo integratsioonitarkvara käivitumisel</span>
+	  </label>
+	</p>
+	<p>
+	  <label>
+		<input type="checkbox" name="scheduled_tasks" {% if computer.SCHEDULE_TASKS %} checked {% endif %}/>
+		<span >Luba ajastatud sündmused</span>
+	  </label>
+	</p>
+	<p>
+	  <label>
+		<input type="checkbox" name="desktop_notes" {% if computer.DESKTOP_NOTES %} checked {% endif %}/>
+		<span >Käivita töölauamärkmed arvuti käivitumisel</span>
+	  </label>
+	</p>
+	<input class="waves-light btn deep-purple lighten-2" type="submit" value="Rakenda">
+</form>
+{% if SESSION["code"] == "127.0.0.1" %}
+{% if "mas" in SESSION["device"] %}
+    <h2>Lubatud seadmed</h2>
+    <ul class="collection">
+    {% for line in os.popen("type %homedrive%\mas\maia\whitelist.txt") %}
+        <li class="collection-item">{{ line.strip().replace("m", "Markuse ").replace("as", "arvuti").replace("tel", "telefon").replace("ta", "tahvelarvuti").replace("at", "asjad muudele seadmetele").replace("arvutil", "arvuti").replace("arvutiv", "virtuaalarvuti") }}<a class="secondary-content" href="/remove_dev?str={{line.strip().replace(' ', '').replace('.', '-')}}"><i class="material-icons icon-blue">delete</i></a></li>
+    {% endfor %}
+    </ul>
+    <a class="waves-effect waves-light btn deep-purple lighten-2" href="/add_dev">Lisa seade</a>
+{% endif %}
+<a class="waves-effect waves-light btn deep-purple lighten-2" href="/add_dev">Lisa seade</a>
+{% endif %}
+<h3>Taustapildid</h3>
+<a class="waves-effect waves-light btn deep-purple lighten-2" href="/swap_versions">Vaheta miniversioon täisversiooniga</a>
+<p>Töölaud</p>
+<img style="width: 100%;" src="/bg?type=desktop">
+<a class="waves-effect waves-light btn deep-purple lighten-2 mt-1" href="/bg?type=desktop&dload=1">Laadi alla</a>
+<p>Logimisekraan</p>
+<img style="width: 100%;" src="/bg?type=login">
+<a class="waves-effect waves-light btn deep-purple lighten-2 mt-1" href="/bg?type=login&dload=1">Laadi alla</a>
+<p>Üldine</p>
+<img style="width: 100%;" src="/bg?type=common">
+<a class="waves-effect waves-light btn deep-purple lighten-2 mt-1" href="/bg?type=common&dload=1">Laadi alla</a>
+<p>Miniversioon</p>
+<img style="width: 100%;" src="/bg?type=uncommon">
+<a class="waves-effect waves-light btn deep-purple lighten-2 mt-1" href="/bg?type=uncommon&dload=1">Laadi alla</a>
+<br>
+    {% if "command" in SESSION %}
+        <p style="font-family: Monospace; background: #000; color: #bbbbbb; padding: 10px;">
+                {% for line in os.popen(SESSION["command"]).readlines() %}
+                {{ line.replace(" ", "\u00A0") }}
+                <br/>
+                {% endfor %}
+        </p>
+    {% endif %}
+    <h2>Käskluse käivitamine</h2>
+    <form method="POST" action="/runcmd">
+        <input style="width: 100%;" name="command" type="text"><br/><br/>
+        <input class="waves-light btn deep-purple lighten-2" type="submit" value="Käivita käsklus">
+    </form>
+<br>
+<div style="text-align: center;">
+    <hr><a class="waves-effect waves-light btn red darken-1" href="/shutdown">Sulge arvuti</a><br><br>
+    <a class="waves-effect waves-light btn green" href="/restart">Taaskäivita arvuti</a><br><br>
+    <a class="waves-effect waves-light btn orange darken-2" href="/sleep">Vii arvuti unerežiim</a>
+</div>

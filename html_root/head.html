@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="et">
+	<head>
+	  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+	  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0"/>
+	  <title>Markuse asjad</title>
+
+	  <!-- CSS  -->
+	  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+	  <link href="/css/materialize.css" type="text/css" rel="stylesheet" media="screen,projection"/>
+	  <link href="/css/style.css" type="text/css" rel="stylesheet" media="screen,projection"/>
+	  <link rel="icon" type="image/x-icon" href="/favicon.svg">
+      <title>Markuse asjad</title>
+      <link rel="stylesheet" href="/style.css"/>
+	</head>
+	<body>
+		<div class="navbar-fixed">
+			<nav>
+				<div class="nav-wrapper blue lighten-2">
+					<a href="/" class="brand-logo"><img class="secondary-content" style="width: 50px; margin: 5px;" src="/images/mas_web.svg"/></a>
+
+                        <a href="#" data-target="mobile-menu" class="sidenav-trigger">
+                        <i class="large material-icons">menu</i>
+                        </a>
+      					<ul id="nav-mobile" class="right hide-on-med-and-down">
+						{% if session %}
+							{% if  "hdd" in request.url_rule.rule or "flash" in request.url_rule.rule or "mas_info" in request.url_rule.rule or "mas_db" in request.url_rule.rule %}
+								<li><a href="/">Markuse arvuti</a></li>
+							{% else %}
+								<li class="active"><a href="/">Markuse arvuti</a></li>
+							{% endif %}
+						{% endif %}
+						{% if "mas_info" in request.url_rule.rule %}
+							<li class="active"><a href="/mas_info">Markuse arvuti asjade teave</a></li>
+						{% else %}
+							<li><a href="/mas_info">Markuse arvuti asjade teave</a></li>
+						{% endif %}
+						{% if not "computer.flashdriveroot" == "null" %}
+							{% if "flash" in request.url_rule.rule %}
+								<li class="active"><a href="/flash">Markuse mälupulk</a></li>
+							{% else %}
+								<li><a href="/flash">Markuse mälupulk</a></li>
+							{% endif %}
+						{% endif %}
+						{% if not "computer.hdd" == "null" %}
+							{% if "hdd" in request.url_rule.rule %}
+								<li class="active"><a href="/hdd">Markuse kaustad</a></li>
+							{% else %}
+								<li><a href="/hdd">Markuse kaustad</a></li>
+							{% endif %}
+						{% endif %}
+						{% if "mas_db" in request.url_rule.rule %}
+							<li class="active"><a href="/mas_db">Markuse asjade versioonid</a></li>
+						{% else %}
+							<li><a href="/mas_db">Markuse asjade versioonid</a></li>
+						{% endif %}
+					</ul>
+				</div>
+			</nav>
+		
+		</div>
+			<ul class="sidenav" id="mobile-menu">
+				{% if session %}
+					{% if  "hdd" in request.url_rule.rule or "flash" in request.url_rule.rule or "mas_info" in request.url_rule.rule or "mas_db" in request.url_rule.rule %}
+						<li><a href="/">Markuse arvuti</a></li>
+					{% else %}
+						<li class="active"><a href="/">Markuse arvuti</a></li>
+					{% endif %}
+				{% endif %}
+				{% if "mas_info" in request.url_rule.rule %}
+					<li class="active"><a href="/mas_info">Markuse arvuti asjade teave</a></li>
+				{% else %}
+					<li><a href="/mas_info">Markuse arvuti asjade teave</a></li>
+				{% endif %}
+				{% if not "computer.flashdriveroot" == "null" %}
+					{% if "flash" in request.url_rule.rule %}
+						<li class="active"><a href="/flash">Markuse mälupulk</a></li>
+					{% else %}
+						<li><a href="/flash">Markuse mälupulk</a></li>
+					{% endif %}
+				{% endif %}
+				{% if not "computer.hdd" == "null" %}
+					{% if "hdd" in request.url_rule.rule %}
+						<li class="active"><a href="/hdd">Markuse kaustad</a></li>
+					{% else %}
+						<li><a href="/hdd">Markuse kaustad</a></li>
+					{% endif %}
+				{% endif %}
+				{% if "mas_db" in request.url_rule.rule %}
+					<li class="active"><a href="/mas_db">Markuse asjade versioonid</a></li>
+				{% else %}
+					<li><a href="/mas_db">Markuse asjade versioonid</a></li>
+				{% endif %}
+			</ul>
+		<!--<p style="color: #aaa;">Projekt M.A.I.A (Windowsile)</p>-->
+		<br/>
+		<script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+		<script src="/js/materialize.js"></script>
+		<script src="/js/init.js"></script>
+	<div class="mainpage">

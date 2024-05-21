@@ -1,0 +1,12 @@
+.idea
+__pycache__
+backup
+venv
+whitelist.txt
+screenshot.png
+pict001.wmf
+images/*.png
+images/*.jpg
+images/*.jog
+images/*.jpeg
+images/*.JPG

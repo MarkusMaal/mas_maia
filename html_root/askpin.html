@@ -1,0 +1,10 @@
+<h1>Seadme valideerimine</h1>
+    <br/>
+<p>Arvuti ekraanile peaks ilmuma kontrollkood.<br>Sisestage see siia, et lisada see seade valgesse nimekirja. <br>Kontrollkood sisaldab suurtähti ja numbreid ning on 8 tähemärgi pikkune.</p>
+<form method="POST" action="/verify_dev">
+	<div class="input-field col s10">
+          <input style="text-transform: uppercase;" name="verifycode" id="verifycode" maxlength="8" type="text" class="validate">
+          <label for="verifycode">Kontrollkood</label>
+	</div>
+    <input class="btn  waves-light white-text deep-purple lighten-2" type="submit" value="Lisa seade"/>
+</form>
