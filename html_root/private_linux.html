@@ -12,6 +12,8 @@ Markuse tahvelarvuti
 Markuse virtuaalarvuti
 {% elif SESSION["device"] == "mat" %}
 Markuse asjad muudele seadmetele
+{% elif SESSION["device"] == "clf" %}
+Puhverserver
 {% endif %}
 <br>
 {% if not SESSION["code"] == "127.0.0.1" %}
@@ -29,8 +31,8 @@ IP aadress: <span style="display: none;" id="mac">{{SESSION["code"]}}</span><a i
 {% endif %}
 <a class="waves-effect waves-light btn deep-purple lighten-2 mt-1" href="/screen">Ekraanipilt</a>&nbsp;&nbsp;
 <a class="waves-effect waves-light btn deep-purple lighten-2 mt-1" href="/crd_toggle">
-    {% if not 'inactive' in subprocess.check_output('echo "$(systemctl is-active --user crd-mirror.service)"', shell=True, text=True) %}
-    Keela kaugtöölaua ühendus
+    {% if 'running' in subprocess.check_output('[ "$(ps -ef | grep krfb | wc -l)" -gt "3" ] && echo "running" || echo "idle"', shell=True, text=True) %}
+    Keela kaugtöölaua ühendus 
     {% else %}
     Luba kaugtöölaua ühendus
     {% endif %}
@@ -76,11 +78,20 @@ IP aadress: <span style="display: none;" id="mac">{{SESSION["code"]}}</span><a i
     <h3>Lubatud seadmed</h3>
     <ul class="collection">
     {% for line in os.popen("cat ~/.mas/maia/whitelist.txt") %}
-        <li class="collection-item">{{ line.strip().replace("m", "Markuse ").replace("asl", "sülearvuti").replace("as", "arvuti").replace("tel", "telefon").replace("ta", "tahvelarvuti").replace("at", "asjad muudele seadmetele").replace("arvutil", "arvuti").replace("arvutiv", "virtuaalarvuti") }}<a class="secondary-content" href="/remove_dev?str={{line.strip().replace(' ', '').replace('.', '-')}}"><i class="material-icons">delete</i></a></li>
+        <li class="collection-item">{{ line.strip().replace("m", "Markuse ").replace("asl", "sülearvuti").replace("as", "arvuti").replace("tel", "telefon").replace("ta", "tahvelarvuti").replace("at", "asjad muudele seadmetele").replace("arvutil", "arvuti").replace("arvutiv", "virtuaalarvuti").replace("clf", "Puhverserver") }}<a class="secondary-content" href="/remove_dev?str={{line.strip().replace(' ', '').replace('.', '-')}}"><i class="material-icons">delete</i></a></li>
     {% endfor %}
     </ul>
     <a class="waves-effect waves-light btn deep-purple lighten-2" href="/add_dev">Lisa seade</a>
     {% endif %}
+
+    <h3>Ühendatud mälupulgad</h3>
+    <ul class="collection">
+    {% for dev in os.popen("lsblk -o PATH,RM") %}
+      {% if dev.strip()[-1] == "1" and not subprocess.check_output("lsblk -o MODEL " + dev.split()[0] + " -n | head -n 1", shell=True, text=True).strip() == "" %}
+        <li class="collection-item">{{subprocess.check_output("lsblk -o MODEL " + dev.split()[0] + " -n | head -n 1", shell=True, text=True)}} ({{dev.split()[0]}})<a class="secondary-content" href="/mount_flash?path={{dev.split()[0].replace('/', '%2F')}}" title="Haagi"><i class="material-icons">file_download</i></a></li>
+      {% endif %}
+    {% endfor %}
+    </ul>
     <h3>Taustapildid</h3>
     <a class="waves-effect waves-light btn deep-purple lighten-2" href="/swap_versions">Vaheta miniversioon täisversiooniga</a>
     <p>Töölaud</p>

@@ -1,0 +1,35 @@
+  <!-- Modal Structure -->
+  <div id="modal1" class="modal">
+    <div class="modal-content">
+      <h4>Valitud fail:</h4>
+      <p>Nimi: <span id="selfile">undefined</span><br>
+      Maht: <span id="filesize">0B</span></p>
+      <iframe style="width: 100%; border: none; height: 46vh;" id="filepreview" allowfullscreen></iframe>
+      <p>Mida soovite teha?</p>
+    </div>
+    <div class="modal-footer">
+        <a class="modal-close waves-effect waves-green btn-flat" onclick="document.querySelector('#filepreview').src = '';" href="#!">Sulge</a>
+        <a id="filedload" class="modal-close waves-effect waves-green btn-flat" href="#!">Laadi alla</a>
+    </div>
+  </div>
+
+  <script>
+    $(document).ready(function(){
+        $('.modal').modal();
+    });
+
+    getFile = (name) => {
+        let url = location.href;
+        url = url.replace("#!", "");
+        if (url.endsWith("/")) {
+            url = url.slice(0, -1);
+        }
+        let filename = document.querySelector("#" + name).innerHTML;
+        size = filename.split("</i>")[1].split("font-size: 0.9em\">")[1].split("</span>")[0];
+        filename = filename.split("</i>")[1].split("<span")[0];
+        document.querySelector("#selfile").innerHTML = filename;
+        document.querySelector("#filedload").href = url + "/" + filename;
+        document.querySelector("#filepreview").src = url + "/" + filename + "?preview=1";
+        document.querySelector("#filesize").innerHTML = size;
+    };
+  </script>

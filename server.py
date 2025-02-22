@@ -192,6 +192,42 @@ class Version:
         with open(self.root + "/events.txt", "w", encoding="UTF-8") as events:
             events.write(text)
 
+    
+    def GetFriendlySize(self, capacity, ignore_gib=False):
+        if capacity < 1000:
+            return f"{capacity} B"
+        elif capacity < 1000000:
+            unit = "k"
+            binary_size = capacity / 1024.0
+            decimal_size = capacity / 1000.0
+        elif capacity < 1000000000:
+            unit = "M"
+            binary_size = capacity / 1048576
+            decimal_size = capacity / 1000000.0
+        elif capacity < 1000000000000:
+            unit = "G"
+            binary_size = capacity / 1073741824.0
+            decimal_size = capacity / 1000000000.0
+        elif capacity < 1000000000000000:
+            unit = "T"
+            binary_size = capacity / 1099511627776.0
+            decimal_size = capacity / 1000000000000.0
+        elif capacity < 1000000000000000000:
+            unit = "P"
+            binary_size = capacity / 1125899906842624.0
+            decimal_size = capacity / 10000001000000000.0
+        else:
+            unit = "E"
+            binary_size = capacity / 1152921504606846976.0
+            decimal_size = capacity / 1000000000000000000.0
+
+        if not ignore_gib:
+            return f"{round(decimal_size, 2)} {unit}B ({round(binary_size, 2)} {unit}iB)"
+        else:
+            return f"{round(decimal_size, 2)} {unit}B"
+
+
+
 
 rootpass = "defPassWD345"
 
@@ -219,20 +255,25 @@ app.config['SECRET_KEY'] = SECRET_KEY
 
 app.config['FLASK_ENV'] = "development"
 # andmebaasi nimi
+#mysql = None
+#try:
 mysql = mysql.connector.connect(user="root", password=rootpass, host="localhost", database="markustegelane")
+#except:
+#    pass
 #mysql.init_app(app)
 
 # Windows-only
 def process_exists(process_name):
-    progs = str(subprocess.check_output('tasklist'))
-    print("Checking Windows processes...")
-    if process_name in progs:
-        return True
-    else:
-        return False
+    if platform == "win32":
+        progs = str(subprocess.check_output('tasklist'))
+        print("Checking Windows processes...")
+        if process_name in progs:
+            return True
+        else:
+            return False
 
 def MakeBreadcrumb(prefix, path):
-    out = "<nav style=\"box-shadow: none;\"class=\"white\"><div class=\"nav-wrapper\">"
+    out = "<nav style=\"box-shadow: none;\" class=\"white\"><div style=\"overflow: auto; white-space: nowrap;\" class=\"nav-wrapper\">"
     link = prefix
     if prefix == "/":
         link = prefix + "."
@@ -244,7 +285,13 @@ def MakeBreadcrumb(prefix, path):
     out += "</div></nav>"
     return out
 
-def ListDir(prefix, abs_path, dirs, files):
+def CheckExts(ftype, name, exts, ntype):
+    for ext in exts:
+        if name.strip().lower().endswith("." + ext) :
+            return ntype
+    return ftype
+
+def ListDir(prefix, abs_path, dirs, files, fsdir):
     out = "<div class=\"collection\">"
     if prefix == "/":
         prefix = "/."
@@ -254,8 +301,32 @@ def ListDir(prefix, abs_path, dirs, files):
         out += "<a style=\"color: #77b;\" href=\"" + prefix + "/\" class=\"collection-item\"><i class=\"material-icons circle inline-icon\" style=\"margin-right: 10px;\">folder</i>..</a>"
     for dir in sorted(dirs, key=str.casefold):
         out += "<a style=\"color: #77b;\" href=\"" + prefix + "/" + os.path.join(abs_path, dir) + "\" class=\"collection-item\"><i class=\"material-icons circle inline-icon\" style=\"margin-right: 10px;\">folder</i>" + dir + "</a>"
+    i = 0
+    img_exts = ["png", "jpg", "jpeg", "jpe", "jxl", "gif", "webp", "avif", "tif", "tiff", "bmp", "svg", "ico"]
+    mov_exts = ["mov", "mp4", "avi", "mpg", "ogv", "mkv", "webm", "flv", "vob", "drc", "mts", "m2ts", "wmv", "asf", "yuv", "3gp", "mxf", "nsv", "m4v"]
+    mus_exts = ["aa", "aac", "act", "aiff", "alac", "flac", "amr", "ape", "au", "awb", "dss", "dvf", "gsm", "iklax", "ivs", "m4a", "m4b", "m4p", "mmf", "movpkg", "mp3", "mpc", "msv", "ogg", "oga", "mogg", "opus", "tta", "vox", "wav", "wma", "wv", "cda", "mid", "midi", "sf2", "mod", "xm", "s2m", "s3m", "it", "psm"]
+    cod_exts = ["cs", "c", "h", "asm", "bf", "php", "py", "pyc", "js", "java", "html", "xml", "bat", "cmd", "sh", "rs", "cpp", "o", "pdb", "jsp", "json", "htm", "bas", "vb", "r", "m", "rpyc", "lxk", "rcc", "lua", "toml", "action", "abs", "luac", "vbs", "asi", "src", "scb", "mom", "pl", "html5", "mf", "css", "scss", "ss", "rss", "gradle", "mvn", "nt", "ps1", "j", "c++", "as", "lisp", "lol", "qs", "tpl", "ps2", "vbscript", "xbs", "ssq"]
+    txt_exts = ["txt", "log", "ini", "inf", "md"]
+    exe_exts = ["exe", "scr", "com", "appimage", "app", "dll", "so"]
+    arc_exts = ["zip", "7z", "rar", "tar", "gz", "xz", "jar", "apk", "wpk"]
+    mas_exts = ["sf", "cfg", "cnf", "unlock", "reg", "bscfg", "bs2cfg", "bs3cfg"]
+    ima_exts = ["iso", "img", "ima", "dd", "vhd", "vhdx", "vmdk", "qcow2", "vdi"]
     for file in sorted(files, key=str.casefold):
-        out += "<a style=\"color: #77b;\" href=\"" + prefix + "/" + os.path.join(abs_path, file) + "\" class=\"collection-item\"><i class=\"material-icons circle inline-icon\" style=\"margin-right: 10px;\">insert_drive_file</i>" + file + "</a>"
+     ftype = "insert_drive_file"
+     ftype = CheckExts(ftype, file, mov_exts, "movie")
+     ftype = CheckExts(ftype, file, mus_exts, "music_note")
+     ftype = CheckExts(ftype, file, cod_exts, "code")
+     ftype = CheckExts(ftype, file, txt_exts, "short_text")
+     ftype = CheckExts(ftype, file, exe_exts, "apps")
+     ftype = CheckExts(ftype, file, arc_exts, "archive")
+     ftype = CheckExts(ftype, file, mas_exts, "settings")
+     ftype = CheckExts(ftype, file, ima_exts, "sd_card")
+     ftype = CheckExts(ftype, file, img_exts, "image")
+     try:
+        out += "<a id=\"file" + str(i) + "\" href=\"#/\" onclick=\"getFile('file"+str(i)+"')\" data-target=\"modal1\" style=\"color: #77b;\" class=\"collection-item modal-trigger\"><i class=\"material-icons circle inline-icon\" style=\"margin-right: 10px;\">" + ftype + "</i>" + file + "<span style='opacity: 0; position: absolute; right: 1em; font-size: 0.9em'>" + computer.GetFriendlySize(os.path.getsize(os.path.join(fsdir, abs_path, file)), True) + "</span>" + "</a>"
+     except:
+        out += "<a id=\"file" + str(i) + "\" href=\"#/\" onclick=\"getFile('file"+str(i)+"')\" data-target=\"modal1\" style=\"color: #77b;\" class=\"collection-item modal-trigger\"><i class=\"material-icons circle inline-icon\" style=\"margin-right: 10px;\">" + ftype + "</i>" + file + "<span style='opacity: 0; position: absolute; right: 1em; font-size: 0.9em'>" + computer.GetFriendlySize(-1, True) + "</span>" + "</a>"
+     i = i + 1
     out += "</div>"
     return out
 
@@ -332,14 +403,14 @@ def mas_faq():
 
 @app.route("/swap_versions", methods=["GET"])
 def SwapMiniFull():
-    if session and computer.auth(session["code"], request.remote_addr):
+    if session and computer.auth(session["code"], safeip(request)):
         print("Deleting left/right desktop backgrounds")
         os.popen("rm \"" + root + "/bg_desktop_l.png\"")
         os.popen("rm \"" + root + "/bg_desktop_r.png\"")
         print("Swapping desktop backgrounds")
         os.popen("mv \"" + root + "/bg_desktop.png\" \"" + root + "/temp.png\" && mv \"" + root + "/bg_uncommon.png\" \"" + root + "/bg_desktop.png\" && mv \"" + root + "/temp.png\" \"" + root + "/bg_uncommon.png\"")
         print("Creating left/right desktop backgrounds")
-        os.popen("magick \"" + root + "/bg_desktop.png\" -crop 1280x1024+0+0 \"" + root + "/bg_desktop_l.png\" && magick \"" + root + "/bg_desktop.png\" -crop 1280x1024+3200+0 \"" + root + "/bg_desktop_r.png\" && sh " + root + "/change_bg.sh")
+        os.popen("magick \"" + root + "/bg_desktop.png\" -crop 1280x1024+0+56 \"" + root + "/bg_desktop_l.png\" && magick \"" + root + "/bg_desktop.png\" -crop 1280x1024+3200+56 \"" + root + "/bg_desktop_r.png\" && sh " + root + "/change_bg.sh")
         return redirect("/")
     else:
         return redirect("/")
@@ -347,7 +418,7 @@ def SwapMiniFull():
 @app.route("/runcmd", methods=["POST"])
 def runcmd():
     if request.method == "POST" and session:
-        if computer.auth(session["code"], request.remote_addr):
+        if computer.auth(session["code"], safeip(request)):
             if request.form["command"][:2] == "rm" or request.form["command"][:2] == "dd":
                 session["comamnd"] = "echo \"This command is blacklisted.\""
                 return redirect("/")
@@ -358,14 +429,12 @@ def runcmd():
 
 @app.route("/crd_toggle", methods=["GET"])
 def toggle_crd():
-    if not 'inactive' in subprocess.check_output('echo "$(systemctl is-active --user crd-mirror.service)"', shell=True, text=True):
-        os.system("/usr/bin/crd --stop")
-        os.system("systemctl --user stop crd-mirror.service")
-        time.sleep(2)
+    if 'running' in subprocess.check_output('[ "$(ps -ef | grep krfb | wc -l)" -gt "3" ] && echo "running" || echo "idle"', shell=True, text=True):
+        os.system("pkill -9 krfb")
+        time.sleep(1)
         return redirect("/")
     else:
-        os.system("/usr/bin/crd --stop")
-        os.system("systemctl --user start crd-mirror.service")
+        os.system("WAYLAND_DISPLAY=wayland-0 krfb --nodialog & disown")
         time.sleep(2)
         return redirect("/")
 
@@ -375,7 +444,7 @@ def add_wallpaper():
         return redirect("/")
     else:
         if request.method == "POST":
-            if computer.auth(session["code"], request.remote_addr):
+            if computer.auth(session["code"], safeip(request)):
                 f = request.files['file']
                 f.save(maiaroot + "/images/" + f.filename)
                 return render_page_string("<p>Fail laaditi üles</p><a class=\"btn deep-purple lighten-2 waves-effect waves-light\" href=\"/\">Tagasi avalehele</a>")
@@ -390,7 +459,7 @@ def chain_wallpaper():
     if not session:
         return redirect("/")
     else:
-        if computer.auth(session["code"], request.remote_addr):
+        if computer.auth(session["code"], safeip(request)):
             cursor = mysql.cursor()
             cursor.execute("INSERT INTO mas_wallpapers (ASUKOHT, VERSIOONI_ID) VALUES (\"" + request.form["location"] + \
                            "\", " + request.form["ver_id"] + ")")
@@ -406,7 +475,7 @@ def remove_wallpaper():
     if not session:
         return redirect("/")
     else:
-        if computer.auth(session["code"], request.remote_addr):
+        if computer.auth(session["code"], safeip(request)):
             cursor = mysql.cursor()
             cursor.execute("DELETE FROM mas_wallpapers WHERE ID = " + request.form["id"])
             mysql.commit()
@@ -421,7 +490,7 @@ def add_record():
     if not session:
         return redirect("/")
     else:
-        if computer.auth(session["code"], request.remote_addr):
+        if computer.auth(session["code"], safeip(request)):
             if request.method == "POST":
                 cursor = mysql.cursor()
                 cmd = "INSERT INTO mas_db (VERSIOON, LVERSIOON, AASTA, NIMI, KIRJELDUS, MINI) VALUES ("
@@ -462,7 +531,7 @@ def wallpapers():
     if not session:
         return redirect("/")
     else:
-        if computer.auth(session["code"], request.remote_addr):
+        if computer.auth(session["code"], safeip(request)):
             cursor = mysql.cursor()
             cursor.execute("SELECT * FROM mas_wallpapers")
             wallpapers = cursor.fetchall()
@@ -486,7 +555,7 @@ def upload():
     if not session:
         return redirect("/")
     else:
-        if computer.auth(session["code"], request.remote_addr):
+        if computer.auth(session["code"], safeip(request)):
             if request.method == 'POST':
                 f = request.files['file']
                 p = request.args["path"]
@@ -501,7 +570,7 @@ def upload():
 
 @app.route("/get", methods=["GET"])
 def getIP():
-    return render_page_string(request.remote_addr)
+    return render_page_string(safeip(request))
 
 
 @app.route("/mas_db", methods=["GET"])
@@ -511,7 +580,7 @@ def mas_db():
         cursor.execute("SELECT * FROM mas_db")
         versioonid = cursor.fetchall()
         out = ""
-        if "code" in session and computer.auth(session["code"], request.remote_addr):
+        if "code" in session and computer.auth(session["code"], safeip(request)):
             out += "<h1>Haldamine</h1>"
             out += "<br><a class=\"waves-effect waves-light btn deep-purple lighten-2\" href=\"/mas_db/add\">Lisa kirje</a>&nbsp;&nbsp;" \
                    "<a class=\"waves-effect waves-light btn deep-purple lighten-2\" href=\"/mas_db/update\">Muuda kirjet</a>&nbsp;&nbsp;" \
@@ -616,6 +685,11 @@ def mas_db():
             out += "</div>"
             return render_page_string(out)
 
+def safeip(request):
+    if "HTTP_CF_CONNECTING_IP" in request.environ:
+        return request.environ["HTTP_CF_CONNECTING_IP"]
+    else:
+        return request.remote_addr
 
 @app.route("/", methods=["GET"])
 def index():
@@ -625,10 +699,10 @@ def index():
         redirect("/logout")
     if not session or len(session) < 2:
         ignore = 0
-        addr = request.remote_addr
+        addr = safeip(request)
         if os.path.exists(computer.rootfolder + "/flash_unlock_is_enabled.log"):
             session["flashunlock"] = True
-        if request.remote_addr == "127.0.0.1" or request.remote_addr == "localhost":
+        if safeip(request) == "127.0.0.1" or safeip(request) == "localhost":
             session["code"] = addr
             session["device"] = "mas"
             time.sleep(0.2)
@@ -656,12 +730,12 @@ def index():
     else:
         whitelist = open(maiaroot + "/whitelist.txt").readlines()
         for line in whitelist:
-            if line.strip().split(" ")[0] == request.remote_addr:
+            if line.strip().split(" ")[0] == safeip(request):
                 if platform == "win32":
                     return render_page("/html_root/private.html")
                 elif platform == "linux" or platform == "linux2":
                     return render_page("/html_root/private_linux.html")
-        if request.remote_addr == "localhost" or request.remote_addr == "127.0.0.1":
+        if safeip(request) == "localhost" or safeip(request) == "127.0.0.1":
             if platform == "win32":
                 return render_page("/html_root/private.html")
             elif platform == "linux" or platform == "linux2":
@@ -714,10 +788,10 @@ def ip():
     if process_exists("Markuse arvuti lukustamis"):
         return render_page_string("Arvuti on hetkel lukustatud. Seadme lisamise funktsioon pole sellises olukorras saadaval.")
     whitelist = open(maiaroot + "/whitelist.txt").readlines()
-    if not session:
+    if not "code" in session:
         ignore = 0
-        addr = request.remote_addr
-        if request.remote_addr == "127.0.0.1" or request.remote_addr == "localhost":
+        addr = safeip(request)
+        if safeip(request) == "127.0.0.1" or safeip(request) == "localhost":
             session["code"] = addr
             session["device"] = "mas"
             return redirect("/")
@@ -739,7 +813,7 @@ def ip():
                                   "<script>const ip = \"" + addr + "\"; let devtype = \"\";</script><script "
                                                                  "src=\"/js/pre-load.js\" type=\"text/javascript\"/>")
     else:
-        if request.remote_addr == "127.0.0.1" or request.remote_addr == "localhost":
+        if safeip(request) == "127.0.0.1" or safeip(request) == "localhost":
             return redirect("/")
         for line in whitelist:
             if line.strip().split(" ")[0] == session["code"]:
@@ -755,7 +829,7 @@ def lock():
     if not session:
         return redirect("/")
     else:
-        if computer.auth(session["code"], request.remote_addr):
+        if computer.auth(session["code"], safeip(request)):
             if platform == "win32":
                 os.system("\"" + computer.root + "/Markuse asjad/Markuse arvuti lukustamissüsteem.exe\"")
             elif platform == "linux" or platform == "linux2":
@@ -772,7 +846,7 @@ def unlock():
     if not session:
         return redirect("/")
     else:
-        if computer.auth(session["code"], request.remote_addr):
+        if computer.auth(session["code"], safeip(request)):
             #os.system("killall light-locker && sleep 5 && $(light-locker)")
             os.system("loginctl unlock-session &")
             time.sleep(1)
@@ -785,7 +859,7 @@ def edfu():
     if not session:
         return redirect("/")
     else:
-        if computer.auth(session["code"], request.remote_addr):
+        if computer.auth(session["code"], safeip(request)):
             if os.path.exists(computer.rootfolder + "/flash_unlock_is_enabled.log"):
                 os.system("rm ~/.mas/flash_unlock_is_enabled.log &")
             else:
@@ -800,7 +874,7 @@ def shutdown():
     if not session:
         return redirect("/")
     else:
-        if computer.auth(session["code"], request.remote_addr):
+        if computer.auth(session["code"], safeip(request)):
             device = "Tundmatu seade"
             if session["device"] == "mas":
                 device = "Markuse arvuti"
@@ -828,7 +902,7 @@ def restart():
     if not session:
         return redirect("/")
     else:
-        if computer.auth(session["code"], request.remote_addr):
+        if computer.auth(session["code"], safeip(request)):
             device = "Tundmatu seade"
             if session["device"] == "mas":
                 device = "Markuse arvuti"
@@ -855,7 +929,7 @@ def sleep():
     if not session:
         return redirect("/")
     else:
-        if computer.auth(session["code"], request.remote_addr):
+        if computer.auth(session["code"], safeip(request)):
             if platform == "win32":
                 os.system("%windir%\\System32\\rundll32.exe powrprof.dll,SetSuspendState Standby")
             elif platform == "linux" or platform == "linux2":
@@ -866,7 +940,8 @@ def sleep():
 
 @app.route("/screen")
 def make_snip():
-    os.system("import -window root ~/.mas/maia/screenshot.png")
+    os.system("spectacle -f -b -o ~/.mas/maia/screenshot.png")
+    time.sleep(2)
     return render_page("/html_root/screenshot.html")
 
 @app.route("/mas_info")
@@ -936,6 +1011,11 @@ def mas_info():
         out += "Pole ühendatud või haakumata</td></tr>"
     else:
         out += computer.HDD + "</td></tr>"
+    out += "<tr><td>Keskkonna muutujad</td><td>"
+    for key in request.environ.keys():
+        if not "COOKIE" in key and not "JWT" in key:
+            out += key+"="+str(request.environ[key])+"<br>"
+    out += "</td></tr>"
     out += "<tr><td>Verifile 2.0 olek</td><td>"
     out += str(computer.Verifile2) + ": " + str(computer.UserfriendlyVerifile())
     out += "</td></tr>"
@@ -974,6 +1054,14 @@ def sendBackground():
         return send_file(root + "/bg_login.png", as_attachment=request.args.get("dload")=="1")
     elif tp == "common":
         return send_file(root + "/bg_common.png", as_attachment=request.args.get("dload")=="1")
+    elif tp == "mobile":
+        return send_file(root + "/bg_mobile.png", as_attachment=request.args.get("dload")=="1")
+    elif tp == "mobile_lock":
+        return send_file(root + "/bg_mobile_lock.png", as_attachment=request.args.get("dload")=="1")
+    elif tp == "tablet":
+        return send_file(root + "/bg_tablet.png", as_attachment=request.args.get("dload")=="1")
+    elif tp == "tablet_lock":
+        return send_file(root + "/bg_tablet_lock.png", as_attachment=request.args.get("dload")=="1")
     elif tp == "uncommon":
         return send_file(root + "/bg_uncommon.png", as_attachment=request.args.get("dload")=="1")
     else:
@@ -985,7 +1073,7 @@ def flash():
     if not session:
         return redirect("/")
     else:
-        if computer.auth(session["code"], request.remote_addr) and not computer.flashdriveroot == "null":
+        if computer.auth(session["code"], safeip(request)) and not computer.flashdriveroot == "null":
             files = None
             try:
                 files = os.scandir(computer.flashdriveroot)
@@ -1023,8 +1111,9 @@ def flash():
                 
             dirs, files = CollectFsEntries(computer.flashdriveroot)
             out += "<h2>Failid Markuse mälupulgal</h2>"
-            out += ListDir("/flash", "", dirs, files)
+            out += ListDir("/flash", "", dirs, files, computer.flashdriveroot)
             out += open(maiaroot + "/html_root/upload.html", "r", encoding="UTF-8").read()
+            out += open(maiaroot + "/html_root/filebrowser.html", "r", encoding="UTF-8").read()
             return render_page_string(out, path=computer.flashdriveroot)
         else:
             computer.LocateFlash()
@@ -1039,17 +1128,20 @@ def flashfile(req_path):
     if not session:
         return redirect("/")
     else:
-        if computer.auth(session["code"], request.remote_addr) and not computer.flashdriveroot == "null":
+        if computer.auth(session["code"], safeip(request)) and not computer.flashdriveroot == "null":
             abs_path = os.path.join(computer.flashdriveroot, req_path)
             if not os.path.exists(abs_path):
                 return abort(404)
             if os.path.isfile(abs_path):
-                return send_file(abs_path, as_attachment=True)            
+                return send_file(abs_path, as_attachment=("preview" not in request.args))            
             dirs, files = CollectFsEntries(abs_path)
             out = "<h2>Markuse mälupulk</h2>"
             out += MakeBreadcrumb("/flash", abs_path.replace(computer.flashdriveroot, ""))
-            out += ListDir("/flash", abs_path.replace(computer.flashdriveroot, ""), dirs, files)
-            out += open(maiaroot + "/html_root/upload.html", "r", encoding="UTF-8").read()
+            out += ListDir("/flash", abs_path.replace(computer.flashdriveroot, ""), dirs, files, computer.flashdriveroot)
+            with open(maiaroot + "/html_root/upload.html", "r", encoding="UTF-8") as upload:
+                out += upload.read()
+            with open(maiaroot + "/html_root/filebrowser.html", "r", encoding="UTF-8") as fbrowser:
+                out += fbrowser.read()
             return render_page_string(out, path=computer.flashdriveroot + "/" + req_path)
         else:
             return redirect("/")
@@ -1060,7 +1152,7 @@ def chgcolor():
     if not session:
         return redirect("/")
     else:
-        if computer.auth(session["code"], request.remote_addr) and not computer.HDD == "null":
+        if computer.auth(session["code"], safeip(request)) and not computer.HDD == "null":
             bg_col = request.form.get("bg")
             fg_col = request.form.get("fg")
             bg_array = list(str(int(bg_col[i:i+2], 16)) for i in (1, 3, 5))
@@ -1084,11 +1176,12 @@ def hdd():
     if not session:
         return redirect("/")
     else:
-        if computer.auth(session["code"], request.remote_addr) and not computer.HDD == "null":
+        if computer.auth(session["code"], safeip(request)) and not computer.HDD == "null":
             dirs, files = CollectFsEntries(computer.HDD)
             out = "<h2>Markuse kaustad</h2>"
-            out += ListDir("/hdd", "", dirs, files)
+            out += ListDir("/hdd", "", dirs, files, computer.HDD)
             out += open(maiaroot + "/html_root/upload.html", "r", encoding="UTF-8").read()
+            out += open(maiaroot + "/html_root/filebrowser.html", "r", encoding="UTF-8").read()
             return render_page_string(out, path=computer.HDD)
         else:
             return redirect("/")
@@ -1099,21 +1192,22 @@ def hddfile(re_path):
     if not session:
         return redirect("/")
     else:
-        if computer.auth(session["code"], request.remote_addr) and not computer.HDD == "null":
+        if computer.auth(session["code"], safeip(request)) and not computer.HDD == "null":
             abs_path = os.path.join(computer.HDD, re_path)
             if not os.path.exists(abs_path):
                 return abort(404)
             if os.path.isfile(abs_path):
-                return send_file(abs_path, as_attachment=True)
+                return send_file(abs_path, as_attachment=("preview" not in request.args))
             dirs, files = CollectFsEntries(abs_path)
             out = "<h2>Markuse kaustad</h2>"
             if platform == "win32":
                 out += MakeBreadcrumb("/hdd", abs_path.replace(computer.HDD + ":", ""))
-                out += ListDir("/hdd", abs_path.replace(computer.HDD + ":", ""), dirs, files)
+                out += ListDir("/hdd", abs_path.replace(computer.HDD + ":", ""), dirs, files, computer.HDD)
             else:
                 out += MakeBreadcrumb("/hdd", abs_path.replace(computer.HDD, "")[1:])
-                out += ListDir("/hdd", abs_path.replace(computer.HDD, "")[1:], dirs, files)
+                out += ListDir("/hdd", abs_path.replace(computer.HDD, "")[1:], dirs, files, computer.HDD)
             out += open(maiaroot + "/html_root/upload.html", "r", encoding="UTF-8").read()
+            out += open(maiaroot + "/html_root/filebrowser.html", "r", encoding="UTF-8").read()
             return render_page_string(out, path=computer.HDD + "/" + re_path)
         else:
             return redirect("/")
@@ -1131,7 +1225,8 @@ def dload_img(req_path):
     fixed_path = "/" + req_path.replace("\\", "/")
     print(fixed_path)
     out += MakeBreadcrumb("/", fixed_path)
-    out += ListDir("/", fixed_path, dirs, files)
+    out += ListDir("/", fixed_path, dirs, files, abs_path)
+    out += open(maiaroot + "/html_root/filebrowser.html", "r", encoding="UTF-8").read()
     return render_page_string(out)
 
 @app.route("/<path:req_path>")
@@ -1140,14 +1235,75 @@ def file(req_path):
     if not os.path.exists(abs_path):
         return abort(404)
     if os.path.isfile(abs_path):
-        return send_file(abs_path, as_attachment=True)
+        return send_file(abs_path, as_attachment=("preview" not in request.args))
     dirs, files = CollectFsEntries(abs_path)
     out = "<h2>Failid kaustas /" + req_path + "</h2>"
     fixed_path = "/" + req_path.replace("\\", "/")
     print(fixed_path)
     out += MakeBreadcrumb("/", fixed_path)
-    out += ListDir("/", fixed_path, dirs, files)
+    out += ListDir("/", fixed_path, dirs, files, abs_path)
+    out += open(maiaroot + "/html_root/filebrowser.html", "r", encoding="UTF-8").read()
     return render_page_string(out)
+
+
+@app.route("/vpc", methods=["GET"])
+def virtualmachine():
+    if not session:
+        return redirect("/")
+    else:
+        return render_page("/html_root/virtualmachine.html")
+
+@app.route("/attach_usb/<id>", methods=["GET"])
+def vm_attach(id):
+    if not session:
+        return redirect("/")
+    else:
+        os_name = subprocess.check_output("echo $(sudo virsh list --name)", shell=True, text=True)
+        os.popen("sh " + root + "/attach.sh " + id + " " + os_name)
+        return redirect("/vpc")
+
+@app.route("/detach_usb/<id>", methods=["GET"])
+def vm_detach(id):
+    if not session:
+        return redirect("/")
+    else:
+        os_name = subprocess.check_output("echo $(sudo virsh list --name)", shell=True, text=True)
+        os.popen("sh " + root + "/detach.sh " + id + " " + os_name)
+        return redirect("/vpc")
+
+@app.route("/vpc_shutdown", methods=["GET"])
+def vm_shutdown():
+    if not session:
+        return redirect("/")
+    else:
+        os_name = subprocess.check_output("echo $(sudo virsh list --name)", shell=True, text=True)
+        os.popen("sudo virsh shutdown " + os_name)
+        return redirect("/vpc")
+
+@app.route("/vpc_reboot", methods=["GET"])
+def vm_reboot():
+    if not session:
+        return redirect("/")
+    else:
+        os_name = subprocess.check_output("echo $(sudo virsh list --name)", shell=True, text=True)
+        os.popen("sudo virsh reboot " + os_name)
+        return redirect("/vpc")
+
+
+@app.route("/vpc_run/<name>", methods=["GET"])
+def vm_run(name):
+    if not session:
+        return redirect("/")
+    else:
+        os.popen("sudo virsh start " + name)
+        return redirect("/vpc")
+    
+@app.route("/mount_flash", methods=["GET"])
+def mount_flash():
+    args = request.args
+    for i in range(1, 10):
+        os.popen("udisksctl mount -b " + args["path"] + str(i))
+    return redirect("/")
 
 @app.errorhandler(HTTPException)
 def handle_exception(e):

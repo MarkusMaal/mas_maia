@@ -12,6 +12,8 @@ Markuse tahvelarvuti
 Markuse virtuaalarvuti
 {% elif SESSION["device"] == "mat" %}
 Markuse asjad muudele seadmetele
+{% elif SESSION["device"] == "clf" %}
+Puhverserver
 {% endif %}
 <br>
 IP aadress: <span style="display: none;" id="mac">{{SESSION["code"]}}</span><a id="me" href="#/" onclick="document.getElementById('mac').style['display'] = 'inline'; document.getElementById('me').style['display'] = 'none';">Kuva</a>
@@ -54,7 +56,7 @@ IP aadress: <span style="display: none;" id="mac">{{SESSION["code"]}}</span><a i
     <h2>Lubatud seadmed</h2>
     <ul class="collection">
     {% for line in os.popen("type %homedrive%\mas\maia\whitelist.txt") %}
-        <li class="collection-item">{{ line.strip().replace("m", "Markuse ").replace("as", "arvuti").replace("tel", "telefon").replace("ta", "tahvelarvuti").replace("at", "asjad muudele seadmetele").replace("arvutil", "arvuti").replace("arvutiv", "virtuaalarvuti") }}<a class="secondary-content" href="/remove_dev?str={{line.strip().replace(' ', '').replace('.', '-')}}"><i class="material-icons icon-blue">delete</i></a></li>
+        <li class="collection-item">{{ line.strip().replace("m", "Markuse ").replace("as", "arvuti").replace("tel", "telefon").replace("ta", "tahvelarvuti").replace("at", "asjad muudele seadmetele").replace("arvutil", "arvuti").replace("arvutiv", "virtuaalarvuti").replace("clf", "Puhverserver") }}<a class="secondary-content" href="/remove_dev?str={{line.strip().replace(' ', '').replace('.', '-')}}"><i class="material-icons icon-blue">delete</i></a></li>
     {% endfor %}
     </ul>
     <a class="waves-effect waves-light btn deep-purple lighten-2" href="/add_dev">Lisa seade</a>

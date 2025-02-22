@@ -1,0 +1,70 @@
+body.dark {
+    background: #292C35;
+    color: #ddd;
+}
+
+body.dark .card {
+    background-color: #313540;
+    color: #fff;
+    opacity: .9;
+}
+
+body.dark .card-action a {
+    color: #fff !important;
+}
+
+body.dark .card-action a:hover {
+    color: #fce4ec !important;
+}
+
+body.dark .collection-item, body.dark .collection, body.dark tr {
+    background: #292C35;
+    color: #fff;
+    border-color: #fff6;
+}
+
+body.dark .collection-item:hover {
+    background-color: #fff2;
+}
+
+body.dark .breadcrumb {
+    background: #292C35;
+    color: #fff;
+    border-color: #fff6;
+}
+
+body.dark .breadcrumb::before {
+    color: #fff;
+}
+
+/* fix white background on the breadcrumb without affecting navbar */
+body.dark .nav-wrapper:has(> a.breadcrumb) { 
+    background: #292C35;
+}
+
+body.dark .sidenav {
+    background: black;
+}
+
+body.dark li > a {
+    color: white !important;
+}
+
+body.dark li > a:hover {
+    background-color: #fff3;
+    transition: 0.2s;
+}
+
+body.dark input {
+    color: #ccc;
+}
+
+body.dark .select-dropdown {
+    color: #ccc !important;
+    background: #191c25;
+}
+
+body.dark .select-wrapper::before {
+    color: #ccc !important;
+}
+

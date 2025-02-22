@@ -10,3 +10,6 @@ images/*.jpg
 images/*.jog
 images/*.jpeg
 images/*.JPG
+scss
+.vscode
+compile_css.sh

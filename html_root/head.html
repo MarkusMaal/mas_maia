@@ -7,6 +7,7 @@
 
 	  <!-- CSS  -->
 	  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+	  <link href="/css/dark.css" type="text/css" rel="stylesheet" media="screen,projection"/>
 	  <link href="/css/materialize.css" type="text/css" rel="stylesheet" media="screen,projection"/>
 	  <link href="/css/style.css" type="text/css" rel="stylesheet" media="screen,projection"/>
 	  <link rel="icon" type="image/x-icon" href="/favicon.svg">
@@ -24,7 +25,7 @@
                         </a>
       					<ul id="nav-mobile" class="right hide-on-med-and-down">
 						{% if session %}
-							{% if  "hdd" in request.url_rule.rule or "flash" in request.url_rule.rule or "mas_info" in request.url_rule.rule or "mas_db" in request.url_rule.rule %}
+							{% if  "hdd" in request.url_rule.rule or "flash" in request.url_rule.rule or "mas_info" in request.url_rule.rule or "mas_db" in request.url_rule.rule  or "vpc" in request.url_rule.rule %}
 								<li><a href="/">Markuse arvuti</a></li>
 							{% else %}
 								<li class="active"><a href="/">Markuse arvuti</a></li>
@@ -49,11 +50,17 @@
 								<li><a href="/hdd">Markuse kaustad</a></li>
 							{% endif %}
 						{% endif %}
+						{% if "vpc" in request.url_rule.rule %}
+							<li class="active"><a href="/vpc">Markuse virtuaalarvuti</a></li>
+						{% else %}
+							<li><a href="/vpc">Markuse virtuaalarvuti</a></li>
+						{% endif %}
 						{% if "mas_db" in request.url_rule.rule %}
 							<li class="active"><a href="/mas_db">Markuse asjade versioonid</a></li>
 						{% else %}
 							<li><a href="/mas_db">Markuse asjade versioonid</a></li>
 						{% endif %}
+						<li><a style="position: relative; padding-left: 2em;" class="dark-toggle" href="#/" onclick="localStorage.setItem('mode', (localStorage.getItem('mode') || 'dark') === 'dark' ? 'light' : 'dark'); localStorage.getItem('mode') === 'dark' ? document.querySelector('body').classList.add('dark') : document.querySelector('body').classList.remove('dark')" title="Dark/light"><i class="material-icons left">brightness_4</i></a></li>
 					</ul>
 				</div>
 			</nav>
@@ -86,11 +93,17 @@
 						<li><a href="/hdd">Markuse kaustad</a></li>
 					{% endif %}
 				{% endif %}
+				{% if "vpc" in request.url_rule.rule %}
+					<li class="active"><a href="/vpc">Markuse virtuaalarvuti</a></li>
+				{% else %}
+					<li><a href="/vpc">Markuse virtuaalarvuti</a></li>
+				{% endif %}
 				{% if "mas_db" in request.url_rule.rule %}
 					<li class="active"><a href="/mas_db">Markuse asjade versioonid</a></li>
 				{% else %}
 					<li><a href="/mas_db">Markuse asjade versioonid</a></li>
 				{% endif %}
+				<li><a style="position: relative; padding-left: 2em;" class="dark-toggle" href="#/" onclick="localStorage.setItem('mode', (localStorage.getItem('mode') || 'dark') === 'dark' ? 'light' : 'dark'); localStorage.getItem('mode') === 'dark' ? document.querySelector('body').classList.add('dark') : document.querySelector('body').classList.remove('dark')" title="Dark/light"><i class="material-icons left">brightness_4</i></a></li>
 			</ul>
 		<!--<p style="color: #aaa;">Projekt M.A.I.A (Windowsile)</p>-->
 		<br/>

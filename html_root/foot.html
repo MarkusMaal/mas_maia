@@ -4,6 +4,10 @@
 		 
 		 
 		</div>
-
+		<script>
+			if (localStorage.getItem('mode') === 'dark') {
+				document.querySelector('body').classList.add('dark');
+			}
+		</script>
 	</body>
 </html>

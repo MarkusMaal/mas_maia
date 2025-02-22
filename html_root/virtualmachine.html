@@ -1,0 +1,23 @@
+<h2>Markuse virtuaalarvuti asjad</h2>
+{% if not subprocess.check_output("echo $(sudo virsh list --name)", shell=True, text=True).strip() == "" %}
+<p>Jooksev virtuaalarvuti: {{subprocess.check_output("echo $(sudo virsh list --name)", shell=True, text=True)}}</p>
+
+<a class="waves-effect waves-light btn deep-purple lighten-2 mt-1" href="/vpc_shutdown">Ohutu sulgemine</a>&nbsp;&nbsp;
+<a class="waves-effect waves-light btn deep-purple lighten-2 mt-1" href="/vpc_reboot">Taaskäivita</a>&nbsp;&nbsp;
+
+<p>USB seadmed</p>
+<ul class="collection">
+{% for line in subprocess.check_output("lsusb", shell=True, text=True).split("\n") %}
+    {% if not line == "" %}
+        <li class="collection-item">{{line}}<a style="margin-left: 1em;" class="secondary-content" href="/attach_usb/{{loop.index-1}}"><i class="material-icons icon-blue">usb</i></a>&nbsp;&nbsp;<a class="secondary-content" href="/detach_usb/{{loop.index-1}}"><i style="color: #f00a;" class="material-icons icon-blue">delete</i></a></li>
+    {% endif %}
+{% endfor %}
+</ul>
+{% else %}
+<p>Klikkige virtuaalarvutil, et see käivitada</p>
+<div class="collection">
+{% for line in subprocess.check_output("sudo virsh list --all --name", shell=True, text=True).strip().split("\n") %}
+    <a href="/vpc_run/{{line}}" style="color: #77b;" class="collection-item"><i class="material-icons circle inline-icon" style="margin-right: 10px;">computer</i>{{line}}</a>
+{% endfor %}
+</div>
+{% endif %}
