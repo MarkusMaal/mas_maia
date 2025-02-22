@@ -3,6 +3,18 @@ body.dark {
     color: #ddd;
 }
 
+body.dark .modal, body.dark .modal-content {
+    background-color: #292C35;
+}
+
+body.dark .modal-footer {
+    background-color: #23252c;
+}
+
+body.dark .modal-close {
+    color: #ddd;
+}
+
 body.dark .card {
     background-color: #313540;
     color: #fff;
